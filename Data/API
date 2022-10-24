@@ -1,0 +1,16 @@
+# In some columns, there is ID number not actual data.
+# So must use API, using another endpoint to gather data for each ID number.
+# Get Booser Version -> Rockets: /rockets
+# get Launch Site -> Launchpads: /launchpads
+# get Payload Data -> Payloads: /payloads
+# get Core Data -> Core Data: /cores
+# Store data in lists to create dataset
+
+# from 'Rockets' column we want 1) Booster names
+# from 'Launchpad' column we want 1) launchpad name 2) longitude 3) latitude
+# from 'Payload' column we want 1) mass of payloads 2) Orbit it is going into
+# from 'Cores' column we want 1)Outcome of Landing 2) Number of FLights per Core 
+# 3) Whether Gridfins were used 4) Whether core was Reused 5) Whether legs were used 
+# 6) Whether Landing Pad were used 7) the Block of the Core 8) Number of times core was used 
+# 9) Serial of the core
+
