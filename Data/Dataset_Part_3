@@ -1,0 +1,192 @@
+# pandas is a software library written for the Python programming language for data manipulation and analysis.
+import pandas as pd
+#NumPy is a library for the Python programming language, adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions to operate on these arrays
+import numpy as np
+# Matplotlib is a plotting library for python and pyplot gives us a MatLab like plotting framework. We will use this in our plotter function to plot data.
+import matplotlib.pyplot as plt
+#Seaborn is a Python data visualization library based on matplotlib. It provides a high-level interface for drawing attractive and informative statistical graphics
+import seaborn as sns
+
+#Exploratory Data Analysis
+#First, let's read the SpaceX dataset into a Pandas dataframe and print its summary
+df=pd.read_csv("dataset_part_2.csv")
+# If you were unable to complete the previous lab correctly you can uncomment and load this csv
+# df = pd.read_csv('https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-DS0701EN-SkillsNetwork/api/dataset_part_2.csv')
+df.head(5)
+FlightNumber	Date	BoosterVersion	PayloadMass	Orbit	LaunchSite	Outcome	Flights	GridFins	Reused	Legs	LandingPad	Block	ReusedCount	Serial	Longitude	Latitude	Class
+0	1	2010-06-04	Falcon 9	6123.547647	LEO	CCSFS SLC 40	None None	1	False	False	False	NaN	1.0	0	B0003	-80.577366	28.561857	0
+1	2	2012-05-22	Falcon 9	525.000000	LEO	CCSFS SLC 40	None None	1	False	False	False	NaN	1.0	0	B0005	-80.577366	28.561857	0
+2	3	2013-03-01	Falcon 9	677.000000	ISS	CCSFS SLC 40	None None	1	False	False	False	NaN	1.0	0	B0007	-80.577366	28.561857	0
+3	4	2013-09-29	Falcon 9	500.000000	PO	VAFB SLC 4E	False Ocean	1	False	False	False	NaN	1.0	0	B1003	-120.610829	34.632093	0
+4	5	2013-12-03	Falcon 9	3170.000000	GTO	CCSFS SLC 40	None None	1	False	False	False	NaN	1.0	0	B1004	-80.577366	28.561857	0
+
+#First, let's try to see how the FlightNumber (indicating the continuous launch attempts.) and Payload variables would affect the launch outcome.
+#We can plot out the FlightNumber vs. PayloadMassand overlay the outcome of the launch. We see that as the flight number increases, the first stage is more likely to land successfully. The payload mass is also important; it seems the more massive the payload, the less likely the first stage will return.
+sns.catplot(y="PayloadMass", x="FlightNumber", hue="Class", data=df, aspect = 5)
+plt.xlabel("Flight Number",fontsize=20)
+plt.ylabel("Pay load Mass (kg)",fontsize=20)
+plt.show()
+
+#We see that different launch sites have different success rates. CCAFS LC-40, has a success rate of 60 %, while KSC LC-39A and VAFB SLC 4E has a success rate of 77%.
+#Next, let's drill down to each site visualize its detailed launch records.
+#TASK 1: Visualize the relationship between Flight Number and Launch Site
+#Use the function catplot to plot FlightNumber vs LaunchSite, set the parameter x parameter to FlightNumber,set the y to Launch Site and set the parameter hue to 'class'
+
+# Plot a scatter point chart with x axis to be Flight Number and y axis to be the launch site, and hue to be the class value
+sns.catplot(y="LaunchSite", x="FlightNumber", hue="Class", data=df, aspect = 5)
+plt.xlabel("Flight Number",fontsize=20)
+plt.ylabel("Launch Site",fontsize=20)
+plt.show()
+
+#Now try to explain the patterns you found in the Flight Number vs. Launch Site scatter point plots.
+#TASK 2: Visualize the relationship between Payload and Launch Site
+#We also want to observe if there is any relationship between launch sites and their payload mass.
+#Plot a scatter point chart with x axis to be Pay Load Mass (kg) and y axis to be the launch site, and hue to be the class value
+sns.catplot(y="LaunchSite", x="PayloadMass", hue="Class", data=df, aspect = 5)
+plt.xlabel("Pay Load Mass (kg)",fontsize=20)
+plt.ylabel("Launch Site",fontsize=20)
+plt.show()
+
+#Now if you observe Payload Vs. Launch Site scatter point chart you will find for the VAFB-SLC launchsite there are no rockets launched for heavypayload mass(greater than 10000).
+
+#TASK 3: Visualize the relationship between success rate of each orbit type
+#Next, we want to visually check if there are any relationship between success rate and orbit type.
+#Let's create a bar chart for the sucess rate of each orbit
+#HINT use groupby method on Orbit column and get the mean of Class column
+grouped_orbit = df.groupby(by=['Orbit']).mean()
+grouped_orbit = df.groupby(by=['Orbit']).mean()
+gorbit = grouped_orbit['Class'].values
+gorbit
+array([1.        , 1.        , 0.51851852, 1.        , 0.61904762,
+       0.71428571, 0.66666667, 0.66666667, 0.        , 1.        ,
+       0.85714286])
+grouped_orbit['Class']
+Orbit
+ES-L1    1.000000
+GEO      1.000000
+GTO      0.518519
+HEO      1.000000
+ISS      0.619048
+LEO      0.714286
+MEO      0.666667
+PO       0.666667
+SO       0.000000
+SSO      1.000000
+VLEO     0.857143
+Name: Class, dtype: float64
+
+sns.barplot(y=grouped_orbit.index, x=gorbit, data=df)
+plt.xlabel("Outcome",fontsize=20)
+plt.ylabel("Orbit",fontsize=20)
+plt.show()
+
+#Analyze the ploted bar chart try to find which orbits have high sucess rate.
+#TASK 4: Visualize the relationship between FlightNumber and Orbit type
+#For each orbit, we want to see if there is any relationship between FlightNumber and Orbit type.
+# Plot a scatter point chart with x axis to be FlightNumber and y axis to be the Orbit, and hue to be the class value
+sns.catplot(y="Orbit", x="FlightNumber", hue="Class", data=df, aspect = 5)
+plt.xlabel("Flight Number",fontsize=20)
+plt.ylabel("Orbit",fontsize=20)
+plt.show()
+
+#You should see that in the LEO orbit the Success appears related to the number of flights; on the other hand, there seems to be no relationship between flight number when in GTO orbit.
+#TASK 5: Visualize the relationship between Payload and Orbit type
+#Similarly, we can plot the Payload vs. Orbit scatter point charts to reveal the relationship between Payload and Orbit type
+#Plot a scatter point chart with x axis to be Payload and y axis to be the Orbit, and hue to be the class value
+sns.catplot(y="Orbit", x="PayloadMass", hue="Class", data=df, aspect = 5)
+plt.xlabel("PayloadMass (Kg)",fontsize=20)
+plt.ylabel("Orbit",fontsize=20)
+plt.show()
+
+#With heavy payloads the successful landing or positive landing rate are more for Polar,LEO and ISS.
+#However for GTO we cannot distinguish this well as both positive landing rate and negative landing(unsuccessful mission) are both there here.
+#TASK 6: Visualize the launch success yearly trend
+#You can plot a line chart with x axis to be Year and y axis to be average success rate, to get the average launch success trend.
+#The function will help you get the year from the date:
+df['Date'].values
+array(['2010-06-04', '2012-05-22', '2013-03-01', '2013-09-29',
+       '2013-12-03', '2014-01-06', '2014-04-18', '2014-07-14',
+       '2014-08-05', '2014-09-07', '2014-09-21', '2015-01-10',
+       '2015-02-11', '2015-04-14', '2015-04-27', '2015-06-28',
+       '2015-12-22', '2016-01-17', '2016-03-04', '2016-04-08',
+       '2016-05-06', '2016-05-27', '2016-07-18', '2016-08-14',
+       '2016-09-01', '2017-01-14', '2017-02-19', '2017-03-16',
+       '2017-03-30', '2017-05-01', '2017-05-15', '2017-06-03',
+       '2017-06-23', '2017-06-25', '2017-07-05', '2017-08-14',
+       '2017-08-24', '2017-09-07', '2017-10-09', '2017-10-11',
+       '2017-10-30', '2017-12-15', '2017-12-23', '2018-01-08',
+       '2018-01-31', '2018-03-06', '2018-03-30', '2018-04-02',
+       '2018-04-18', '2018-05-11', '2018-06-04', '2018-06-29',
+       '2018-07-22', '2018-07-25', '2018-08-07', '2018-09-10',
+       '2018-10-08', '2018-11-15', '2018-12-03', '2018-12-05',
+       '2018-12-23', '2019-01-11', '2019-03-02', '2019-05-04',
+       '2019-05-24', '2019-06-12', '2019-07-25', '2019-08-06',
+       '2019-11-11', '2019-12-05', '2019-12-17', '2020-01-07',
+       '2020-01-19', '2020-01-29', '2020-02-17', '2020-03-07',
+       '2020-03-18', '2020-04-22', '2020-05-30', '2020-06-04',
+       '2020-06-13', '2020-06-30', '2020-07-20', '2020-08-18',
+       '2020-08-30', '2020-09-03', '2020-10-06', '2020-10-18',
+       '2020-10-24', '2020-11-05'], dtype=object)
+# A function to Extract years from the date 
+Year=[]
+def Extract_year(Date):
+    for i in (df['Date'].values):
+        Year.append(i.split("-")[0])
+    return Year
+df['Date'] = pd.to_datetime(df['Date'])
+Year = df['Date'].dt.year
+# Plot a line chart with x axis to be the extracted year and y axis to be the success rate
+sns.lineplot(x=Year, y='Class', data=df)
+plt.xlabel("Year", fontsize=20)
+plt.ylabel("Outcome",fontsize=20)
+plt.show()
+
+#you can observe that the sucess rate since 2013 kept increasing till 2020
+#Features Engineering
+#By now, you should obtain some preliminary insights about how each important variable would affect the success rate, we will select the features that will be used in success prediction in the future module.
+features = df[['FlightNumber', 'PayloadMass', 'Orbit', 'LaunchSite', 'Flights', 'GridFins', 'Reused', 'Legs', 'LandingPad', 'Block', 'ReusedCount', 'Serial']]
+features.head()
+FlightNumber	PayloadMass	Orbit	LaunchSite	Flights	GridFins	Reused	Legs	LandingPad	Block	ReusedCount	Serial
+0	1	6123.547647	LEO	CCSFS SLC 40	1	False	False	False	NaN	1.0	0	B0003
+1	2	525.000000	LEO	CCSFS SLC 40	1	False	False	False	NaN	1.0	0	B0005
+2	3	677.000000	ISS	CCSFS SLC 40	1	False	False	False	NaN	1.0	0	B0007
+3	4	500.000000	PO	VAFB SLC 4E	1	False	False	False	NaN	1.0	0	B1003
+4	5	3170.000000	GTO	CCSFS SLC 40	1	False	False	False	NaN	1.0	0	B1004
+#TASK 7: Create dummy variables to categorical columns
+#Use the function get_dummies and features dataframe to apply OneHotEncoder to the column Orbits, LaunchSite, LandingPad, and Serial. Assign the value to the variable features_one_hot, display the results using the method head. Your result dataframe must include all features including the encoded ones.
+#HINT: Use get_dummies() function on the categorical columns
+features_one_hot = pd.get_dummies(features[['Orbit', 'LaunchSite', 'LandingPad', 'Serial']])
+features_one_hot
+Orbit_ES-L1	Orbit_GEO	Orbit_GTO	Orbit_HEO	Orbit_ISS	Orbit_LEO	Orbit_MEO	Orbit_PO	Orbit_SO	Orbit_SSO	...	Serial_B1048	Serial_B1049	Serial_B1050	Serial_B1051	Serial_B1054	Serial_B1056	Serial_B1058	Serial_B1059	Serial_B1060	Serial_B1062
+0	0	0	0	0	0	1	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+1	0	0	0	0	0	1	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+2	0	0	0	0	1	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+3	0	0	0	0	0	0	0	1	0	0	...	0	0	0	0	0	0	0	0	0	0
+4	0	0	1	0	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	0	0
+...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...	...
+85	0	0	0	0	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	1	0
+86	0	0	0	0	0	0	0	0	0	0	...	0	0	0	0	0	0	1	0	0	0
+87	0	0	0	0	0	0	0	0	0	0	...	0	0	0	1	0	0	0	0	0	0
+88	0	0	0	0	0	0	0	0	0	0	...	0	0	0	0	0	0	0	0	1	0
+89	0	0	0	0	0	0	1	0	0	0	...	0	0	0	0	0	0	0	0	0	1
+90 rows × 72 columns
+
+#TASK 8: Cast all numeric columns to float64
+#Now that our features_one_hot dataframe only contains numbers cast the entire dataframe to variable type float64
+# HINT: use astype function
+features_one_hot.astype('float64').dtypes
+Orbit_ES-L1     float64
+Orbit_GEO       float64
+Orbit_GTO       float64
+Orbit_HEO       float64
+Orbit_ISS       float64
+                 ...   
+Serial_B1056    float64
+Serial_B1058    float64
+Serial_B1059    float64
+Serial_B1060    float64
+Serial_B1062    float64
+Length: 72, dtype: object
+
+#We can now export it to a CSV for the next section,but to make the answers consistent, in the next lab we will provide data in a pre-selected date range.
+features_one_hot.to_csv('dataset_part_3.csv', index=False)
